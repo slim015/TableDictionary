@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Table Dictionary</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  	crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<form>
+		<h1>Table Dictionary</h1>
+		<br>
+		<p>Enter the name of the table you want to see.</p>
+		<input name="tableName" type="text" />
+		<input name="next" value="Find" type="submit" />
+	</form>
+	<br>
+	<div class="container">
+		<div class="row">
+			<div class="col" style="width: 30%">
+				{{#each tableName}}
+					<p class="tableName">{{Tables_in_lportal61}}</p>
+				{{/each}}
+			</div>
+			<div class="col">
+				<div>
+					<h2>References</h2>
+					<div id="referenceId">
+						{{#each references}}
+							<p class="tableName">{{TableName}}</p>
+						{{/each}}
+					</div>
+				</div>		
+				<table class="table" style="width: 70%">
+					<thead>
+						<tr>
+						  <th scope="col">Field</th>
+						  <th scope="col">Type</th>
+						  <th scope="col">Null</th>
+						  <th scope="col">Key</th>
+						  <th scope="col">Default</th>
+						  <th scope="col">Extra</th>
+						</tr>
+					</thead>
+					<tbody id="fieldBody">
+						{{#each fields}}
+						<tr>
+						  <th scope="row">{{Field}}</th>
+						  <td>{{Type}}</td>
+						  <td>{{Null}}</td>
+						  <td>{{Key}}</td>
+						  <td>{{Default}}</td>
+						  <td>{{Extra}}</td>
+						</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			</div>	
+		</div>
+	</div>
+</body>
+
+<script>
+	$('body').on('click', '.tableName', function(){
+		var text = {
+			name: $(this).text()
+		};
+
+		$.ajax({
+			type: 'POST',
+			data: text,
+			success: function(result){
+				var fieldHtml = '';
+				var refHtml = '';
+
+				for (var i in result.fields){
+					fieldHtml += '<tr>';
+					fieldHtml += '<th>' + result.fields[i].Field + '</th>';
+					fieldHtml += '<td>' + result.fields[i].Type + '</td>';
+					fieldHtml += '<td>' + result.fields[i].Null + '</td>';
+					fieldHtml += '<td>' + result.fields[i].Key + '</td>';
+					fieldHtml += '<td>' + result.fields[i].Default + '</td>';
+					fieldHtml += '<td>' + result.fields[i].Extra + '</td>';
+					fieldHtml += '<tr>';
+				}
+
+				for (var i in result.references){
+					refHtml += '<p class="tableName">' + result.references[i].TableName + '</p>'
+				}
+
+				$('#fieldBody').html(fieldHtml);
+				$('#referenceId').html(refHtml);
+			}
+		});
+	});
+</script>
+
+</html>
